@@ -13,46 +13,62 @@ datasource db {
   provider = "postgresql"
 }
 
-// Data model
 model Event {
   id        Int     @id @default(autoincrement())
   title     String
   description   String
   soldOut Boolean @default(false)
+
+  ticketsForSale Ticket[]
   images Image[]
-  media Media @relation(fields: [])
-  
-  place   Place @relation(fields: [placeID, placeEmail], references: [id, email])
+  media Media?
+
+  place   Place @relation(fields: [placeID], references: [id])
   placeID  Int
-  placeEmail String
 }
 
 model Place {
   id    Int     @id @default(autoincrement())
   email String  @unique
   address  String
-  events Event[]
-  @@unique([id, email])
+  events Event[] //Einn staður getur haft mörg Event, t.d. Harpa
 }
 
 model Image {
+  id  Int @id @default(autoincrement())
   image String @unique
   timeStamp DateTime @default(now())
+
   event Event @relation(fields: [eventId], references: [id])
   eventId Int
 }
 
 model Media {
-  eventId Int
-  placeEmail String
-  facebook  String? @unique
-  website   String
+  id  Int @id @default(autoincrement())
+
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int @unique
+  
+  facebook  String?
+  website   String?
 }
 
-model Tickets {
+model Ticket {
+  id  Int @id @default(autoincrement())
 
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int
+
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([eventId, userId])
 }
 
 model User {
+  id  Int @id @default(autoincrement())
+  email String @unique
 
+  tickets Ticket[]
 }
