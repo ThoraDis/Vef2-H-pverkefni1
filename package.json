@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
+    "@prisma/client": "^7.4.2",
     "dotenv": "^17.2.4",
     "hono": "^4.11.9",
     "pg": "^8.18.0",
+    "prisma": "^7.4.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
