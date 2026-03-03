@@ -1,28 +1,44 @@
 import { Hono } from "hono";
+import type { AuthType } from "./lib/auth.js";
+import auth from "../routes/auth.js";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { TodoPage } from "./components/Todopage.js";
-import { createTodo, listTodos, init, updateTodo, getTodo, deleteFinishedTodos, deleteTodo} from "./lib/db.js";
+import {
+  createTodo,
+  listTodos,
+  init,
+  updateTodo,
+  getTodo,
+  deleteFinishedTodos,
+  deleteTodo,
+} from "./lib/db.js";
 import { AboutPage } from "./components/AboutPage.js";
 import { TodoItemSchema } from "./lib/validation.js";
 import z from "zod";
 import { ErrorPage } from "./components/ErrorPage.js";
 // búum til og exportum Hono app
-export const app = new Hono();
+
+export const app = new Hono<{ Variables: AuthType }>({
+  strict: false,
+});
+
+const routes = [auth];
+const api = app.basePath("/api");
+routes.forEach((route) => api.route("/", route));
 
 // sendir út allt sem er í static möppunni
-app.use('/*', serveStatic({ root: './static' }));
+app.use("/*", serveStatic({ root: "./static" }));
 
-app.get('/', async (c) => {
+app.get("/", async (c) => {
   const db = await init();
 
-  if(!db){
+  if (!db) {
     console.error("Villa kom að gera database");
     return c.text("Villa!");
-
   }
   const todos = await listTodos();
 
-  if(!todos){
+  if (!todos) {
     console.error("Villa kom að sækja todos", todos);
     return c.text("Villa!");
   }
@@ -30,16 +46,16 @@ app.get('/', async (c) => {
   return c.html(<TodoPage todos={todos}></TodoPage>);
 });
 
-app.get('/about', async (c) => {
-  return c.html(<AboutPage/>);
+app.get("/about", async (c) => {
+  return c.html(<AboutPage />);
 });
 
-app.post("/add",async (c) => {
+app.post("/add", async (c) => {
   const body = await c.req.parseBody();
 
   const result = TodoItemSchema.safeParse(body);
 
-  if(!result.success){
+  if (!result.success) {
     console.error(z.flattenError(result.error));
     return c.html(
       <ErrorPage>
@@ -51,7 +67,7 @@ app.post("/add",async (c) => {
 
   const dbResult = await createTodo(result.data);
 
-    if(!dbResult){
+  if (!dbResult) {
     return c.html(
       <ErrorPage>
         <p>Get ekki vistað í gagnagrunn!</p>
@@ -59,15 +75,15 @@ app.post("/add",async (c) => {
       500,
     );
   }
-  return c.redirect('/');
+  return c.redirect("/");
 });
 
 //Uppfæra verkefni sem klárað
-app.post("/update/:id",async (c) => {
+app.post("/update/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  if(id===null){
-      console.error("Ekkert id fyrir verkefni");
+  if (id === null) {
+    console.error("Ekkert id fyrir verkefni");
     return c.html(
       <ErrorPage>
         <p>Ekkert id fyrir verkefni!</p>
@@ -76,9 +92,9 @@ app.post("/update/:id",async (c) => {
     );
   }
 
-  const todoItem = await getTodo(id)
+  const todoItem = await getTodo(id);
 
-  if(!todoItem){
+  if (!todoItem) {
     return c.html(
       <ErrorPage>
         <p>Verkefni fannst ekki í database!</p>
@@ -89,27 +105,26 @@ app.post("/update/:id",async (c) => {
 
   const body = await c.req.parseBody();
 
-   const update={
+  const update = {
     id: id,
-    title:String(todoItem.title),
-    finished:todoItem.finished===true
+    title: String(todoItem.title),
+    finished: todoItem.finished === true,
+  };
 
+  if (body.title !== undefined && typeof body.title === "string") {
+    update.title = body.title;
   }
 
-  if(body.title!==undefined && typeof body.title==="string"){
-    update.title=body.title
-    
-  }
-
-  if(body.finished!==undefined){
-    update.finished=body.finished==='true'
+  if (body.finished !== undefined) {
+    update.finished = body.finished === "true";
   }
 
   const result = TodoItemSchema.safeParse({
-      title: update.title,
-      finished: update.finished});
+    title: update.title,
+    finished: update.finished,
+  });
 
-  if(!result.success){
+  if (!result.success) {
     console.error(z.flattenError(result.error));
     return c.html(
       <ErrorPage>
@@ -119,9 +134,9 @@ app.post("/update/:id",async (c) => {
     );
   }
 
-  const dbResult = await updateTodo(update.id,update.title,update.finished);
+  const dbResult = await updateTodo(update.id, update.title, update.finished);
 
-  if(!dbResult){
+  if (!dbResult) {
     return c.html(
       <ErrorPage>
         <p>Ekki hægt að uppfæra!</p>
@@ -130,15 +145,14 @@ app.post("/update/:id",async (c) => {
     );
   }
 
-  return c.redirect('/');
+  return c.redirect("/");
 });
 
 //Eyða öllum kláruðum verkefnum
-app.post("/delete/finished",async (c) => {
+app.post("/delete/finished", async (c) => {
+  const dbResult = await deleteFinishedTodos();
 
-   const dbResult = await deleteFinishedTodos();
-
-     if(dbResult===0 ){
+  if (dbResult === 0) {
     return c.html(
       <ErrorPage>
         <p>Ekki hægt að eyða!</p>
@@ -146,17 +160,15 @@ app.post("/delete/finished",async (c) => {
       500,
     );
   }
-  return c.redirect('/');
-
+  return c.redirect("/");
 });
 
 //Eyða einu verkefni
-app.post("/delete/:id",async (c) => {
+app.post("/delete/:id", async (c) => {
+  const id = Number(c.req.param("id"));
 
-    const id = Number(c.req.param("id"));
-
-  if(id===null){
-      console.error("Ekkert id fyrir verkefni");
+  if (id === null) {
+    console.error("Ekkert id fyrir verkefni");
     return c.html(
       <ErrorPage>
         <p>Ekkert id fyrir verkefni!</p>
@@ -167,7 +179,7 @@ app.post("/delete/:id",async (c) => {
 
   const dbResult = await deleteTodo(id);
 
-  if(!dbResult){
+  if (!dbResult) {
     return c.html(
       <ErrorPage>
         <p>Ekki hægt að eyða!</p>
@@ -175,5 +187,5 @@ app.post("/delete/:id",async (c) => {
       500,
     );
   }
-  return c.redirect('/');
+  return c.redirect("/");
 });
