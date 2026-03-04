@@ -7,7 +7,7 @@ export const app = new Hono();
 
 //ná í 
 app.get('/',zValidator('query',pagingSchema) ,async(c)=>{
-        const limit=c.req.valid('query').limit
+    const limit=c.req.valid('query').limit
     const offset =c.req.valid('query').offset
 
     const image = await prisma.image.findMany({skip:offset, take:limit});

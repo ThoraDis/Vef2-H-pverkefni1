@@ -25,8 +25,7 @@ export const createMediaSchema=z.object({
 })
 export const createPlaceSchema=z.object({
     email:z.coerce.string().min(1).max(256),
-    address:z.coerce.string().min(1).max(256),
-    events:z.array(z.string().min(1).max(256))
+    address:z.coerce.string().min(1).max(256)
 
 })
 
@@ -63,8 +62,7 @@ export const updateMediaSchema=z.object({
 })
 export const updatePlaceSchema=z.object({
     email:z.coerce.string().min(1).max(256).optional(),
-    address:z.coerce.string().min(1).max(256).optional(),
-    events:z.array(z.string().min(1).max(256)).optional()
+    address:z.coerce.string().min(1).max(256).optional()
 
 })
 export const updateTicketSchema=z.object({
