@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
-import {pagingSchema} from "../schema.zod.js"
+import {pagingSchema, updateEventSchema,createEventSchema} from "../schema.zod.js"
 
 export const app = new Hono();
 
@@ -31,6 +31,22 @@ app.get('/',zValidator('query',pagingSchema) ,async(c)=>{
 
 //Ná í eftir id eða slug
 app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+        const id = c.req.param('id')
+
+        const event = await prisma.event.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!event) {
+            return c.json({ error: 'no such event' }, 404);
+        }
+
+
+        const response = {
+            data: event
+        }
+
+        return c.json(response,200)
 
     }
 )
@@ -41,7 +57,7 @@ app.post('/',zValidator('query',createEventSchema,(result, c) => { if (!result.s
 
 
 //Uppfæra
-app.put('/:id',zValidator('query',aupdateEventSchema,(result, c) => {
+app.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
     if (!result.success) {
       return c.json("Bad request",400)
     }
@@ -49,4 +65,12 @@ app.put('/:id',zValidator('query',aupdateEventSchema,(result, c) => {
     
 
 //Eyða
-app.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
+app.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+    const id = c.req.param('id')
+
+    await prisma.event.delete({
+    where: {
+        id:Number(id),},});
+
+    return c.json(204)
+})

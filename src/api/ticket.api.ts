@@ -1,12 +1,12 @@
 import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
-import {pagingSchema} from "../schema.zod.js"
+import {pagingSchema,createTicketSchema,updateTicketSchema} from "../schema.zod.js"
 
 export const app = new Hono();
 
 //ná í 
-app.get('/',zValidator('query',pagingSchema) ,async(c)=>{)
+app.get('/',zValidator('query',pagingSchema) ,async(c)=>{})
 
 //Ná í eftir id eða slug
 app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
