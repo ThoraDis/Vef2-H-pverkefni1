@@ -21,7 +21,8 @@ model Event {
 
   ticketsForSale Ticket[]
   images         Image[]
-  media          Media?
+  media          Media? // má breyta í óvalkvæmt en í versta falli 
+  // hefur notandi samband við email á viðburðarsíðu
 
   place   Place @relation(fields: [placeID], references: [id])
   placeID Int
@@ -37,10 +38,12 @@ model Place {
 model Image {
   id        Int      @id @default(autoincrement())
   image     String   @unique
-  timeStamp DateTime @default(now())
+  createdAt DateTime @default(now())
 
   event   Event @relation(fields: [eventId], references: [id])
   eventId Int
+
+  @@index([eventId])
 }
 
 model Media {
@@ -50,6 +53,8 @@ model Media {
   eventId  Int     @unique
   facebook String?
   website  String?
+
+  @@index([eventId])
 }
 
 model Ticket {
@@ -65,18 +70,23 @@ model Ticket {
   @@index([eventId, userId])
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
+enum Role {
+  USER
+  ADMIN
+}
 
-  tickets       Ticket[]
-  name          String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+model User {
+  id       Int    @id @default(autoincrement())
+  role     Role   @default(USER)
+  username String @unique
+  email    String @unique
+
+  tickets   Ticket[]
+  name      String? //hægt að gera þetta óvalkvæmt f. verkefni 2
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[]
+  accounts  Account[]
 
   @@map("user")
 }
@@ -98,33 +108,35 @@ model Session {
 }
 
 model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                Int
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String @id
+  userId   Int
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  password String
+
   accessToken           String?
   refreshToken          String?
   idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@map("account")
 }
 
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([identifier])
-  @@map("verification")
-}
+/**
+ * Ekki nauðsynlegt fyrir þetta verkefni
+ * model Verification {
+ * id         String   @id
+ * identifier String
+ * value      String
+ * expiresAt  DateTime
+ * createdAt  DateTime @default(now())
+ * updatedAt  DateTime @updatedAt
+ * @@index([identifier])
+ * @@map("verification")
+ * }
+ */
