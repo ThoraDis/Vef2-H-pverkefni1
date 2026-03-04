@@ -5,25 +5,24 @@ import {pagingSchema} from "../schema.zod.js"
 
 export const app = new Hono();
 
-app.get('/',zValidator('query',pagingSchema) ,async(c)=>{
+//ná í 
+app.get('/',zValidator('query',pagingSchema) ,async(c)=>{)
 
-    const limit=c.req.valid('query').limit
-    const offset =c.req.valid('query').offset
+//Ná í eftir id eða slug
+app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
 
-    const events = await prisma.event.findMany({skip:offset, take:limit});
+//Búa til
+app.post('/',zValidator('query',createPlaceSchema,(result, c) => { if (!result.success) {
+      return c.json("Bad request",400)}}), async(c)=>{})
 
-    const eventsCount = await prisma.event.count()
 
-    const response = {
-        data: events,
-        paging: {
-            limit,
-            offset,
-            count: eventsCount
-            }
-        }
-
-    return c.json(response,200)
-
+//Uppfæra
+app.put('/:id',zValidator('query',updatePlaceSchema,(result, c) => {
+    if (!result.success) {
+      return c.json("Bad request",400)
     }
-)
+  }), async(c)=>{})
+    
+
+//Eyða
+app.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
