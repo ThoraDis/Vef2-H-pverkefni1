@@ -53,15 +53,58 @@ app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
 
 //Búa til
 app.post('/',zValidator('query',createEventSchema,(result, c) => { if (!result.success) {
-      return c.json("Bad request",400)}}), async(c)=>{})
+      return c.json("Bad request",400)}}), async(c)=>{
+
+        const title=c.req.valid('query').title
+        const description =c.req.valid('query').description
+        const soldOut =c.req.valid('query').soldOut
+        const placeID =c.req.valid('query').placeID
+
+        const newEvent = await prisma.event.create({
+            data:{
+                title:title,
+                description:description,
+                soldOut:soldOut,
+                placeID:placeID
+            }
+        })
+
+        const response = {
+            data: newEvent,
+
+        }
+
+        return c.json(response,201)
+      })
 
 
 //Uppfæra
 app.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
-    if (!result.success) {
-      return c.json("Bad request",400)
-    }
-  }), async(c)=>{})
+    if (!result.success) {return c.json("Bad request",400)}}), async(c)=>{
+
+        const id = c.req.param('id')
+        const title=c.req.valid('query').title
+        const description =c.req.valid('query').description
+        const soldOut =c.req.valid('query').soldOut
+        const placeID =c.req.valid('query').placeID
+
+        const updatedEvent=await prisma.event.update({
+            where: {id:Number(id),},
+                data:{
+                    title:title,
+                    description:description,
+                    soldOut:soldOut,
+                    placeID:placeID
+                },
+            
+            });
+
+        const response = {
+            data: updatedEvent
+        }
+
+        return c.json(response,200)
+    })
     
 
 //Eyða
