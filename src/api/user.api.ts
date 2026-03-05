@@ -8,10 +8,10 @@ import {
   idSchema,
 } from "../schema.zod.js";
 
-export const app = new Hono();
+export const userApi = new Hono();
 
 //ná í
-app.get("/", zValidator("query", pagingSchema), async (c) => {
+userApi.get("/", zValidator("query", pagingSchema), async (c) => {
   const limit = c.req.valid("query").limit;
   const offset = c.req.valid("query").offset;
 
@@ -32,7 +32,7 @@ app.get("/", zValidator("query", pagingSchema), async (c) => {
 });
 
 //Ná í eftir id eða slug
-app.get("/:id", zValidator("param", idSchema), async (c) => {
+userApi.get("/:id", zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   const user = await prisma.user.findUnique({ where: { id: id } });
@@ -45,7 +45,7 @@ app.get("/:id", zValidator("param", idSchema), async (c) => {
 });
 
 //Búa til
-app.post(
+userApi.post(
   "/",
   zValidator("form", createUserSchema, (result, c) => {
     if (!result.success) {
@@ -70,7 +70,7 @@ app.post(
 );
 
 //Uppfæra
-app.put(
+userApi.put(
   "/:id",
   zValidator("form", updateUserSchema, (result, c) => {
     if (!result.success) {
@@ -98,7 +98,7 @@ app.put(
 );
 
 //Eyða
-app.delete("/:id", zValidator("param", idSchema), async (c) => {
+userApi.delete("/:id", zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   await prisma.user.delete({
