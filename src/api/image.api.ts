@@ -3,10 +3,10 @@ import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
 import {pagingSchema, createImageSchema,updateImageSchema} from "../schema.zod.js"
 
-export const app = new Hono();
+export const imageApi = new Hono();
 
 //ná í 
-app.get('/',zValidator('query',pagingSchema) ,async(c)=>{
+imageApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
     const limit=c.req.valid('query').limit
     const offset =c.req.valid('query').offset
 
@@ -28,7 +28,7 @@ app.get('/',zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Ná í eftir id eða slug
-app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+imageApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
     const id = c.req.param('id')
 
     const image = await prisma.image.findUnique({
@@ -48,7 +48,7 @@ app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Búa til
-app.post('/',zValidator('query',createImageSchema,(result, c) => { if (!result.success) {
+imageApi.post('/',zValidator('query',createImageSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
         const image=c.req.valid('query').image
         const eventId =c.req.valid('query').eventId
@@ -70,7 +70,7 @@ app.post('/',zValidator('query',createImageSchema,(result, c) => { if (!result.s
 
 
 //Uppfæra
-app.put('/:id',zValidator('query',updateImageSchema,(result, c) => {if (!result.success) {
+imageApi.put('/:id',zValidator('query',updateImageSchema,(result, c) => {if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
         const id = c.req.param('id')
         const image=c.req.valid('query').image
@@ -95,7 +95,7 @@ app.put('/:id',zValidator('query',updateImageSchema,(result, c) => {if (!result.
     
 
 //Eyða
-app.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+imageApi.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.event.delete({
