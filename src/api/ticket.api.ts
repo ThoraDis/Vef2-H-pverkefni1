@@ -3,21 +3,21 @@ import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
 import {pagingSchema,createTicketSchema,updateTicketSchema} from "../schema.zod.js"
 
-export const app = new Hono();
+export const ticketApi = new Hono();
 
 //ná í 
-app.get('/',zValidator('query',pagingSchema) ,async(c)=>{})
+ticketApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{})
 
 //Ná í eftir id eða slug
-app.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
+ticketApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
 
 //Búa til
-app.post('/',zValidator('query',createTicketSchema,(result, c) => { if (!result.success) {
+ticketApi.post('/',zValidator('query',createTicketSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{})
 
 
 //Uppfæra
-app.put('/:id',zValidator('query',updateTicketSchema,(result, c) => {
+ticketApi.put('/:id',zValidator('query',updateTicketSchema,(result, c) => {
     if (!result.success) {
       return c.json("Bad request",400)
     }
@@ -25,4 +25,4 @@ app.put('/:id',zValidator('query',updateTicketSchema,(result, c) => {
     
 
 //Eyða
-app.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
+ticketApi.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{})
