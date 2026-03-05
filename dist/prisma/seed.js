@@ -56,6 +56,7 @@ async function upsertUser(i) {
         create: {
             id: i,
             email: `user${i}@example.org`,
+            username: `usernr${i}`,
         },
     });
 }
@@ -66,9 +67,7 @@ async function upsertTicket(i) {
         create: {
             id: i,
             eventId: i % ticketsPerEvent,
-            ...(i < numOfEvents * ticketsPerEvent * boughtTicketsRatio && {
-                userId: i,
-            }),
+            userId: null,
         },
     });
 }
