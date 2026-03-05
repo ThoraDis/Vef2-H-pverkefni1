@@ -82,7 +82,6 @@ model User {
   email    String @unique
 
   tickets   Ticket[]
-  name      String? //hægt að gera þetta óvalkvæmt f. verkefni 2
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   sessions  Session[]

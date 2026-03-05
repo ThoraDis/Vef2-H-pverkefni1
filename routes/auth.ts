@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { auth } from "../src/lib/auth.js";
-import type { AuthType } from "../src/lib/auth.js";
+import { auth } from "../../src/lib/auth.js";
+import type { AuthType } from "../../src/lib/auth.js";
 
 const router = new Hono<{ Bindings: AuthType }>({
   strict: false,

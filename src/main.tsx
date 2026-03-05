@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { AuthType } from "./lib/auth.js";
-import auth from "../routes/auth.js";
+import auth from "../prisma/routes/auth.js";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { TodoPage } from "./components/Todopage.js";
 import {

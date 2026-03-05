@@ -9,15 +9,12 @@ import { TodoItemSchema } from "./lib/validation.js";
 import z from "zod";
 import { ErrorPage } from "./components/ErrorPage.js";
 // búum til og exportum Hono app
-//export const app = new Hono();
-///*
 export const app = new Hono({
     strict: false,
 });
 const routes = [auth];
 const api = app.basePath("/api");
 routes.forEach((route) => api.route("/", route));
-//*/
 // sendir út allt sem er í static möppunni
 app.use("/*", serveStatic({ root: "./static" }));
 app.get("/", async (c) => {
