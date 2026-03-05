@@ -59,6 +59,12 @@ import { v2 as cloudinary } from 'cloudinary';
 1. hlaða upp myndir. app.post('/upload')
 2. ná myndir app.get('/images/:id')
 */
+app.post('/upload', async (c) => {
+  const body = await c.req.parseBody()
+  // Access files or fields: body['file']
+  console.log(body['file']) 
+  return c.json({ message: 'File uploaded' })
+})
 
 
 // sendir út allt sem er í static möppunni
