@@ -5,6 +5,10 @@ export const pagingSchema=z.object({
     offset: z.coerce.number().min(0).max(100).optional().default(0)
 })
 
+export const idSchema=z.object({
+  id: z.coerce.number().int().min(0),
+})
+
 export const createEventSchema=z.object({
     title:z.coerce.string().min(1).max(256),
     description:z.coerce.string().min(1).max(256),
