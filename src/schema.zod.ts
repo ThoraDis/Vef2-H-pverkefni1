@@ -6,7 +6,7 @@ export const pagingSchema=z.object({
 })
 
 export const idSchema=z.object({
-  id:z.int().min(0),
+  id: z.coerce.number().int().min(0),
 })
 
 export const createEventSchema=z.object({
