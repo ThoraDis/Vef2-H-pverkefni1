@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
@@ -14,61 +14,129 @@ datasource db {
 }
 
 model Event {
-  id        Int     @id @default(autoincrement())
-  title     String
-  description   String
-  soldOut Boolean @default(false)
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  soldOut     Boolean @default(false)
 
   ticketsForSale Ticket[]
-  images Image[]
-  media Media?
+  images         Image[]
+  media          Media? // má breyta í óvalkvæmt en í versta falli 
+  // hefur notandi samband við email á viðburðarsíðu
 
   place   Place @relation(fields: [placeID], references: [id])
-  placeID  Int
+  placeID Int
 }
 
 model Place {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  address  String
-  events Event[] //Einn staður getur haft mörg Event, t.d. Harpa
+  id      Int     @id @default(autoincrement())
+  email   String  @unique
+  address String
+  events  Event[] //Einn staður getur haft mörg Event, t.d. Harpa
 }
 
 model Image {
-  id  Int @id @default(autoincrement())
-  image String @unique
-  timeStamp DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  image     String   @unique
+  createdAt DateTime @default(now())
 
-  event Event @relation(fields: [eventId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id])
   eventId Int
+
+  @@index([eventId])
 }
 
 model Media {
-  id  Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  event Event @relation(fields: [eventId], references: [id])
-  eventId Int @unique
-  
-  facebook  String?
-  website   String?
+  event    Event   @relation(fields: [eventId], references: [id])
+  eventId  Int     @unique
+  facebook String?
+  website  String?
+
+  @@index([eventId])
 }
 
 model Ticket {
-  id  Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  event Event @relation(fields: [eventId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id])
   eventId Int
 
-  userId Int?
-  user User? @relation(fields: [userId], references: [id])
+  userId String?
+  user   User? @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([eventId, userId])
 }
 
-model User {
-  id  Int @id @default(autoincrement())
-  email String @unique
+enum Role {
+  USER
+  ADMIN
+}
 
-  tickets Ticket[]
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String?
+  username      String?  @unique
+  role          Role     @default(USER)
+
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
