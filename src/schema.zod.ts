@@ -59,7 +59,7 @@ export const updateImageSchema = z.object({
 export const updateMediaSchema = z.object({
   facebook: z.coerce.string().min(1).max(256).optional(),
   website: z.coerce.string().min(1).max(256).optional(),
-  eventID: z.coerce.number().optional(),
+  eventId: z.coerce.number().optional(),
 });
 export const updatePlaceSchema = z.object({
   email: z.coerce.string().min(1).max(256).optional(),
