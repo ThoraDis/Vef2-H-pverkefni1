@@ -2,18 +2,20 @@
 npm install
 npm run dev
 ```
+
 ```
 open http://localhost:3000
 ```
 
-Töflu uppsetning
+Create user
+POST http://localhost:4000/api/auth/sign-up/email
 
-Sex tafla:
-	Event tafla
-		Place table
-		Image tafla
-		Media tafla	
+json format:
+{
+"email": "admin@example.org",
+"password": "Test12345678",
+"name": "User One"
+}
 
-Tickets tafla
-		User tafla
-
+Sign in
+POST http://localhost:4000/api/auth/sign-in/email
