@@ -5,7 +5,7 @@ import {
   pagingSchema,
   createUserSchema,
   updateUserSchema,
-  idSchema,
+  idSchemþ,
   loginUserSchema,
   userIdSchema,
 } from "../schema.zod.js";
@@ -57,6 +57,8 @@ userApi.post(
   }),
   async (c) => {
     const email = c.req.valid("json").email;
+    const username = c.req.valid("json").username;
+
 
     const newUser = await prisma.user.create({
       data: {
