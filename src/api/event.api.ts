@@ -2,11 +2,12 @@ import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
 import {pagingSchema, updateEventSchema,createEventSchema} from "../schema.zod.js"
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const eventApi = new Hono();
 
 //ná í 
-eventApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
 
     const limit=c.req.valid('query').limit
     const offset =c.req.valid('query').offset
@@ -30,7 +31,7 @@ eventApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
 )
 
 //Ná í eftir id eða slug
-eventApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.get('/:id',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
         const id = c.req.param('id')
 
         const event = await prisma.event.findUnique({
@@ -52,7 +53,7 @@ eventApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
 )
 
 //Búa til
-eventApi.post('/',zValidator('query',createEventSchema,(result, c) => { if (!result.success) {
+eventApi.post('/',authenticateAdmin,zValidator('query',createEventSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
 
         const title=c.req.valid('query').title
@@ -79,7 +80,7 @@ eventApi.post('/',zValidator('query',createEventSchema,(result, c) => { if (!res
 
 
 //Uppfæra
-eventApi.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
+eventApi.put('/:id',authenticateAdmin,zValidator('query',updateEventSchema,(result, c) => {
     if (!result.success) {return c.json("Bad request",400)}}), async(c)=>{
 
         const id = c.req.param('id')
@@ -108,7 +109,7 @@ eventApi.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
     
 
 //Eyða
-eventApi.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.delete('/:id',authenticateAdmin,zValidator('query',pagingSchema) ,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.event.delete({

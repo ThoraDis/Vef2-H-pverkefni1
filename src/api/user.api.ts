@@ -55,7 +55,9 @@ userApi.post(
       return c.json("Bad request", 400);
     }
   }),
+  
   async (c) => {
+    const username = c.req.valid("json").username;
     const email = c.req.valid("json").email;
 
     const newUser = await prisma.user.create({

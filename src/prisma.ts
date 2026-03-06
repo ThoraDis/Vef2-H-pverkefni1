@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from '@prisma/adapter-pg'
 
 dotenv.config({ quiet: true });
