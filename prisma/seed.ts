@@ -18,7 +18,7 @@ async function createEvent(i: number, placeId: number) {
     data: {
       title: `Random Event Nr.${i}`,
       description: `A facinating description of the event`,
-      placeID: placeId, // Notum ID-ið sem við fengum sendandi
+      placeID: placeId, 
     },
   });
 }
