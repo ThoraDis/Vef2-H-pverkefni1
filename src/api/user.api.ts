@@ -6,7 +6,10 @@ import {
   createUserSchema,
   updateUserSchema,
   idSchema,
+  loginUserSchema,
+  userIdSchema,
 } from "../schema.zod.js";
+import { auth } from "../lib/auth.js";
 
 export const userApi = new Hono();
 
@@ -32,7 +35,7 @@ userApi.get("/", zValidator("query", pagingSchema), async (c) => {
 });
 
 //Ná í eftir id eða slug
-userApi.get("/:id", zValidator("param", idSchema), async (c) => {
+userApi.get("/:id", zValidator("param", userIdSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   const user = await prisma.user.findUnique({ where: { id: id } });
@@ -54,9 +57,11 @@ userApi.post(
   }),
   async (c) => {
     const email = c.req.valid("form").email;
+    const username = c.req.valid("form").username;
 
     const newUser = await prisma.user.create({
       data: {
+        username: username,
         email: email,
       },
     });
@@ -77,7 +82,7 @@ userApi.put(
       return c.json("Bad request", 400);
     }
   }),
-  zValidator("param", idSchema),
+  zValidator("param", userIdSchema),
   async (c) => {
     const id = c.req.valid("param").id;
     const email = c.req.valid("form").email;
@@ -98,7 +103,7 @@ userApi.put(
 );
 
 //Eyða
-userApi.delete("/:id", zValidator("param", idSchema), async (c) => {
+userApi.delete("/:id", zValidator("param", userIdSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   await prisma.user.delete({
