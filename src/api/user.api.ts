@@ -47,13 +47,13 @@ userApi.get("/:id", zValidator("param", idSchema), async (c) => {
 //Búa til
 userApi.post(
   "/",
-  zValidator("form", createUserSchema, (result, c) => {
+  zValidator("json", createUserSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
     }
   }),
   async (c) => {
-    const email = c.req.valid("form").email;
+    const email = c.req.valid("json").email;
 
     const newUser = await prisma.user.create({
       data: {
@@ -72,7 +72,7 @@ userApi.post(
 //Uppfæra
 userApi.put(
   "/:id",
-  zValidator("form", updateUserSchema, (result, c) => {
+  zValidator("json", updateUserSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
     }
@@ -80,7 +80,7 @@ userApi.put(
   zValidator("param", idSchema),
   async (c) => {
     const id = c.req.valid("param").id;
-    const email = c.req.valid("form").email;
+    const email = c.req.valid("json").email;
 
     const newUser = await prisma.user.update({
       where: { id: id },
