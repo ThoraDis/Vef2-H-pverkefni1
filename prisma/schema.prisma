@@ -63,7 +63,7 @@ model Ticket {
   event   Event @relation(fields: [eventId], references: [id])
   eventId Int
 
-  userId Int?
+  userId String?
   user   User? @relation(fields: [userId], references: [id])
 
   @@index([userId])
@@ -76,16 +76,19 @@ enum Role {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  role     Role   @default(USER)
-  username String @unique
-  email    String @unique
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String?
+  username      String?  @unique
+  role          Role     @default(USER)
 
   tickets   Ticket[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  sessions  Session[]
-  accounts  Account[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
 
   @@map("user")
 }
@@ -98,7 +101,7 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
@@ -107,35 +110,33 @@ model Session {
 }
 
 model Account {
-  id       String @id
-  userId   Int
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  password String
-
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@index([userId])
   @@map("account")
 }
 
-/**
- * Ekki nauðsynlegt fyrir þetta verkefni
- * model Verification {
- * id         String   @id
- * identifier String
- * value      String
- * expiresAt  DateTime
- * createdAt  DateTime @default(now())
- * updatedAt  DateTime @updatedAt
- * @@index([identifier])
- * @@map("verification")
- * }
- */
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}

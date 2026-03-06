@@ -55,7 +55,7 @@ async function upsertMedia(i: number) {
   });
 }
 
-async function upsertUser(i: number) {
+async function upsertUser(i: string) {
   await prisma.user.upsert({
     where: { id: i },
     update: {},
@@ -94,7 +94,7 @@ async function main() {
     await upsertMedia(i);
   }
   for (let i = 0; i < numOfEvents * ticketsPerEvent * boughtTicketsRatio; i++) {
-    await upsertUser(i);
+    await upsertUser(i.toString());
   }
   for (let i = 0; i < numOfEvents * ticketsPerEvent; i++) {
     await upsertTicket(i);

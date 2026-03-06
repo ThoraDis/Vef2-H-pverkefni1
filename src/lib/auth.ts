@@ -15,7 +15,7 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  plugins: [username(), jwt()],
+  plugins: [jwt()],
 });
 
 export type AuthType = {

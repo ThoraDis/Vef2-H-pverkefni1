@@ -1,4 +1,4 @@
-import pg from 'pg';
+import pg from "pg";
 /**
  * Gets a PostgreSQL connection pool.
  * @returns Connection pool
@@ -6,14 +6,14 @@ import pg from 'pg';
 function getPool() {
     const { DATABASE_URL } = process.env;
     if (!DATABASE_URL) {
-        console.error('DATABASE_URL not set');
+        console.error("DATABASE_URL not set");
         process.exit(1);
     }
     const pool = new pg.Pool({
         connectionString: DATABASE_URL,
     });
-    pool.on('error', (err) => {
-        console.error('Unexpected error on idle client', err);
+    pool.on("error", (err) => {
+        console.error("Unexpected error on idle client", err);
         process.exit(-1);
     });
     return pool;
@@ -32,7 +32,7 @@ async function query(q, values = []) {
         return await client.query(q, values);
     }
     catch (err) {
-        console.error('Database query error', err);
+        console.error("Database query error", err);
         return null;
     }
     finally {
@@ -45,15 +45,6 @@ async function query(q, values = []) {
  */
 export async function init() {
     // búum til töfluna okkar ef hún er ekki til
-    // SQL til þess:
-    /*
-    CREATE TABLE IF NOT EXISTS todos (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        finished BOOLEAN NOT NULL DEFAULT false,
-        created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    */
     const q = "  CREATE TABLE IF NOT EXISTS todos (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, finished BOOLEAN NOT NULL DEFAULT false, created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP)";
     const results = await query(q);
     if (results) {

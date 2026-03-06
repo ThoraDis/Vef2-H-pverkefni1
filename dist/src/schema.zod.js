@@ -60,3 +60,7 @@ export const updateTicketSchema = z.object({
 export const updateUserSchema = z.object({
     email: z.coerce.string().min(1).max(256).optional(),
 });
+export const loginUserSchema = z.object({
+    email: z.coerce.string().min(1).max(256).optional(),
+    password: z.coerce.string().min(4).max(256),
+});

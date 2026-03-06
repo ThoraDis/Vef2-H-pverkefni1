@@ -9,6 +9,10 @@ export const idSchema = z.object({
   id: z.coerce.number().int().min(0),
 });
 
+export const userIdSchema = z.object({
+  id: z.coerce.string().min(0),
+});
+
 export const createEventSchema = z.object({
   title: z.coerce.string().min(1).max(256),
   description: z.coerce.string().min(1).max(256),
@@ -38,7 +42,7 @@ export const createTicketSchema = z.object({
 export const createUserSchema = z.object({
   username: z.coerce.string().min(1).max(256),
   email: z.coerce.string().min(1).max(256),
-  password: z.coerce.string().min(4).max(256),
+  password: z.coerce.string().min(8).max(256),
 });
 
 export const updateEventSchema = z.object({
@@ -67,4 +71,9 @@ export const updateTicketSchema = z.object({
 });
 export const updateUserSchema = z.object({
   email: z.coerce.string().min(1).max(256).optional(),
+});
+
+export const loginUserSchema = z.object({
+  email: z.coerce.string().min(1).max(256).optional(),
+  password: z.coerce.string().min(8).max(256),
 });

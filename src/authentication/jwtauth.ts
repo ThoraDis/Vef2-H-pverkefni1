@@ -42,7 +42,7 @@ export const authenticate = async (c: Context, next: Next) => {
 
 export const authenticateAdmin = async (c: Context, next: Next) => {
   const userId = c.get("userId");
-  if (!(typeof userId === "number") || !userId) {
+  if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
