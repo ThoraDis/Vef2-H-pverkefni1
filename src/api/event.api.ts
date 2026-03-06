@@ -24,7 +24,6 @@ eventApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
             count: eventsCount
             }
         }
-
     return c.json(response,200)
 
     }
