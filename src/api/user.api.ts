@@ -5,7 +5,7 @@ import {
   pagingSchema,
   createUserSchema,
   updateUserSchema,
-  idSchemþ,
+  idSchema,
   loginUserSchema,
   userIdSchema,
 } from "../schema.zod.js";
