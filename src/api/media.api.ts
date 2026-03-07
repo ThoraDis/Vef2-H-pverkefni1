@@ -7,13 +7,14 @@ import {
   updateMediaSchema,
   idSchema,
 } from "../schema.zod.js";
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const mediaApi = new Hono();
 
 //ná í
-mediaApi.get("/", zValidator("query", pagingSchema), async (c) => {
-  const limit = c.req.valid("query").limit;
-  const offset = c.req.valid("query").offset;
+mediaApi.get("/",authenticate, zValidator("json", pagingSchema), async (c) => {
+  const limit = c.req.valid("json").limit;
+  const offset = c.req.valid("json").offset;
 
   const media = await prisma.media.findMany({ skip: offset, take: limit });
 
@@ -32,7 +33,7 @@ mediaApi.get("/", zValidator("query", pagingSchema), async (c) => {
 });
 
 //Ná í eftir id eða slug
-mediaApi.get("/:id", zValidator("param", idSchema), async (c) => {
+mediaApi.get("/:id",authenticate, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   const media = await prisma.media.findUnique({ where: { id: id } });
@@ -46,7 +47,7 @@ mediaApi.get("/:id", zValidator("param", idSchema), async (c) => {
 
 //Búa til
 mediaApi.post(
-  "/",
+  "/",authenticateAdmin,
   zValidator("json", createMediaSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -75,7 +76,7 @@ mediaApi.post(
 
 //Uppfæra
 mediaApi.put(
-  "/:id",
+  "/:id",authenticateAdmin,
   zValidator("json", updateMediaSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -106,7 +107,7 @@ mediaApi.put(
 );
 
 //Eyða
-mediaApi.delete("/:id", zValidator("param", idSchema), async (c) => {
+mediaApi.delete("/:id",authenticateAdmin, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   await prisma.media.delete({

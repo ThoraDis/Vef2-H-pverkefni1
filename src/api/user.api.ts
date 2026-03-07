@@ -10,13 +10,14 @@ import {
   userIdSchema,
 } from "../schema.zod.js";
 import { auth } from "../lib/auth.js";
+import { authenticateAdmin, authenticate } from "../authentication/jwtauth.js";
 
 export const userApi = new Hono();
 
 //ná í
-userApi.get("/", zValidator("query", pagingSchema), async (c) => {
-  const limit = c.req.valid("query").limit;
-  const offset = c.req.valid("query").offset;
+userApi.get("/", authenticate, zValidator("json", pagingSchema), async (c) => {
+  const limit = c.req.valid("json").limit;
+  const offset = c.req.valid("json").offset;
 
   const users = await prisma.user.findMany({ skip: offset, take: limit });
 
@@ -35,29 +36,36 @@ userApi.get("/", zValidator("query", pagingSchema), async (c) => {
 });
 
 //Ná í eftir id eða slug
-userApi.get("/:id", zValidator("param", userIdSchema), async (c) => {
-  const id = c.req.valid("param").id;
+userApi.get(
+  "/:id",
+  authenticate,
+  zValidator("param", userIdSchema),
+  async (c) => {
+    const id = c.req.valid("param").id;
 
-  const user = await prisma.user.findUnique({ where: { id: id } });
+    const user = await prisma.user.findUnique({ where: { id: id } });
 
-  if (!user) {
-    return c.json({ error: "no such user" }, 404);
-  }
+    if (!user) {
+      return c.json({ error: "no such user" }, 404);
+    }
 
-  return c.json(user, 200);
-});
+    return c.json(user, 200);
+  },
+);
 
 //Búa til
 userApi.post(
   "/",
+  authenticateAdmin,
   zValidator("json", createUserSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
     }
   }),
+
   async (c) => {
-    const email = c.req.valid("json").email;
     const username = c.req.valid("json").username;
+    const email = c.req.valid("json").email;
 
     const newUser = await prisma.user.create({
       data: {
@@ -77,6 +85,7 @@ userApi.post(
 //Uppfæra
 userApi.put(
   "/:id",
+  authenticateAdmin,
   zValidator("json", updateUserSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -103,14 +112,19 @@ userApi.put(
 );
 
 //Eyða
-userApi.delete("/:id", zValidator("param", userIdSchema), async (c) => {
-  const id = c.req.valid("param").id;
+userApi.delete(
+  "/:id",
+  authenticateAdmin,
+  zValidator("param", userIdSchema),
+  async (c) => {
+    const id = c.req.valid("param").id;
 
-  await prisma.user.delete({
-    where: {
-      id: id,
-    },
-  });
+    await prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
 
-  return c.json(204);
-});
+    return c.json(204);
+  },
+);
