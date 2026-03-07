@@ -37,7 +37,7 @@ export const createPlaceSchema = z.object({
 
 export const createTicketSchema = z.object({
   eventId: z.coerce.number(),
-  userId: z.coerce.number(),
+  userId: z.string().length(25),
 });
 export const createUserSchema = z.object({
   username: z.coerce.string().min(1).max(256),
@@ -67,7 +67,7 @@ export const updatePlaceSchema = z.object({
 });
 export const updateTicketSchema = z.object({
   eventId: z.coerce.number().optional(),
-  userId: z.coerce.number().optional(),
+  userId: z.string().optional(),
 });
 export const updateUserSchema = z.object({
   email: z.coerce.string().min(1).max(256).optional(),

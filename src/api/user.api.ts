@@ -60,6 +60,8 @@ userApi.post(
   async (c) => {
     const username = c.req.valid("json").username;
     const email = c.req.valid("json").email;
+    const username = c.req.valid("json").username;
+
 
     const newUser = await prisma.user.create({
       data: {
