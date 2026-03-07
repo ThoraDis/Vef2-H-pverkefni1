@@ -18,7 +18,7 @@ async function createEvent(i: number, placeId: number) {
     data: {
       title: `Random Event Nr.${i}`,
       description: `A facinating description of the event`,
-      placeID: placeId, 
+      placeID: placeId,
     },
   });
 }
@@ -52,11 +52,11 @@ async function createUser(i: number) {
   });
 }
 
-async function createTicket(i: number, eventId: number, userId?: number) {
+async function createTicket(i: number, eventId: number, userId?: string) {
   await prisma.ticket.create({
     data: {
       eventId: eventId,
-      ...(userId && { userId: userId }),
+      userId: userId,
     },
   });
 }
@@ -92,7 +92,7 @@ async function main() {
   }
 
   for (let i = 0; i < numOfEvents * ticketsPerEvent; i++) {
-    const eventId = events[i % numOfEvents].id; 
+    const eventId = events[i % numOfEvents].id;
     const user = users[i] ? users[i].id : undefined;
     await createTicket(i, eventId, user);
   }
