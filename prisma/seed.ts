@@ -52,11 +52,11 @@ async function createUser(i: number) {
   });
 }
 
-async function createTicket(i: number, eventId: number, userId?: number) {
+async function createTicket(i: number, eventId: number, userId?: string) {
   await prisma.ticket.create({
     data: {
       eventId: eventId,
-      ...(userId && { userId: userId }),
+       userId: userId ,
     },
   });
 }
