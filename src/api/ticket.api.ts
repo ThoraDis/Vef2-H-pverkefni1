@@ -6,18 +6,19 @@ import {
   createTicketSchema,
   updateTicketSchema,
 } from "../schema.zod.js";
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const ticketApi = new Hono();
 
 //ná í
-ticketApi.get("/", zValidator("query", pagingSchema), async (c) => {});
+ticketApi.get("/",authenticate, zValidator("query", pagingSchema), async (c) => {});
 
 //Ná í eftir id eða slug
-ticketApi.get("/:id", zValidator("query", pagingSchema), async (c) => {});
+ticketApi.get("/:id",authenticate, zValidator("query", pagingSchema), async (c) => {});
 
 //Búa til
 ticketApi.post(
-  "/",
+  "/",authenticateAdmin,
   zValidator("query", createTicketSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -30,7 +31,7 @@ ticketApi.post(
 
 //Uppfæra
 ticketApi.put(
-  "/:id",
+  "/:id",authenticateAdmin,
   zValidator("query", updateTicketSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -40,4 +41,4 @@ ticketApi.put(
 );
 
 //Eyða
-ticketApi.delete("/:id", zValidator("query", pagingSchema), async (c) => {});
+ticketApi.delete("/:id", authenticateAdmin,zValidator("query", pagingSchema), async (c) => {});
