@@ -7,10 +7,10 @@ import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 export const eventApi = new Hono();
 
 //ná í 
-eventApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
+eventApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
 
-    const limit=c.req.valid('json').limit
-    const offset =c.req.valid('json').offset
+    const limit=c.req.valid('query').limit
+    const offset =c.req.valid('query').offset
 
     const events = await prisma.event.findMany({skip:offset, take:limit});
 
@@ -30,7 +30,7 @@ eventApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
 )
 
 //Ná í eftir id eða slug
-eventApi.get('/:id',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
+eventApi.get('/:id' ,async(c)=>{
         const id = c.req.param('id')
 
         const event = await prisma.event.findUnique({
@@ -108,7 +108,7 @@ eventApi.put('/:id',authenticateAdmin,zValidator('json',updateEventSchema,(resul
     
 
 //Eyða
-eventApi.delete('/:id',authenticateAdmin,zValidator('json',pagingSchema) ,async(c)=>{
+eventApi.delete('/:id',authenticateAdmin,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.event.delete({

@@ -15,9 +15,9 @@ import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 export const userApi = new Hono();
 
 //ná í
-userApi.get("/", authenticate,zValidator("json", pagingSchema), async (c) => {
-  const limit = c.req.valid("json").limit;
-  const offset = c.req.valid("json").offset;
+userApi.get("/", authenticate,zValidator("query", pagingSchema), async (c) => {
+  const limit = c.req.valid("query").limit;
+  const offset = c.req.valid("query").offset;
 
   const users = await prisma.user.findMany({ skip: offset, take: limit });
 

@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
-import {pagingSchema,createPlaceSchema,updatePlaceSchema} from "../schema.zod.js"
+import {pagingSchema,createPlaceSchema,updatePlaceSchema,idSchema} from "../schema.zod.js"
 import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const placeApi = new Hono();
 
 //ná í 
-placeApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
-    const limit=c.req.valid('json').limit
-    const offset =c.req.valid('json').offset
+placeApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
+    const limit=c.req.valid('query').limit
+    const offset =c.req.valid('query').offset
 
     const place = await prisma.place.findMany({skip:offset, take:limit});
 
@@ -28,7 +28,7 @@ placeApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
 })
 
 //Ná í eftir id eða slug
-placeApi.get('/:id',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
+placeApi.get('/:id',authenticate, zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
     const place = await prisma.place.findUnique({
@@ -52,13 +52,11 @@ placeApi.post('/',authenticateAdmin,zValidator('json',createPlaceSchema,(result,
       return c.json("Bad request",400)}}), async(c)=>{
         const email=c.req.valid('json').email
         const address =c.req.valid('json').address
-        //const events = c.req.valid('json').events
 
         const newPlace = await prisma.place.create({
             data:{
                 email:email,
                 address:address,
-                //events
             }
         })
 
@@ -77,8 +75,6 @@ placeApi.put('/:id',authenticateAdmin,zValidator('json',updatePlaceSchema,(resul
         const id = c.req.param('id')
         const email=c.req.valid('json').email
         const address =c.req.valid('json').address
-        //const events = c.req.valid('json').events
-
 
         const updatedPlace=await prisma.place.update({
          where: {id:Number(id),},
@@ -100,7 +96,7 @@ placeApi.put('/:id',authenticateAdmin,zValidator('json',updatePlaceSchema,(resul
     
 
 //Eyða
-placeApi.delete('/:id',authenticateAdmin,zValidator('json',pagingSchema) ,async(c)=>{
+placeApi.delete('/:id',authenticateAdmin,zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
     await prisma.image.delete({
