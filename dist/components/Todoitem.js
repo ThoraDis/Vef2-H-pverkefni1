@@ -1,4 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "hono/jsx/jsx-runtime";
-export const TodoItem = ({ todo }) => {
-    return (_jsxs("li", { children: [_jsx("form", { method: 'post', action: `/update/${todo.id}`, children: _jsx("input", { type: "text", name: "title", value: `${todo.title}` }) }), !todo.finished && (_jsx("form", { method: 'post', action: `/update/${todo.id}`, children: _jsx("button", { type: "submit", name: "finished", value: "true", children: "Kl\u00E1ra\u00F0" }) })), todo.finished && (_jsx("form", { method: 'post', action: `/update/${todo.id}`, children: _jsx("button", { type: "submit", name: "finished", value: "false", children: "\u00D3kl\u00E1ru\u00F0" }) })), _jsx("form", { method: 'post', action: `/delete/${todo.id}`, children: _jsx("button", { children: "Ey\u00F0a" }) })] }));
-};
