@@ -12,9 +12,9 @@ import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 export const mediaApi = new Hono();
 
 //ná í
-mediaApi.get("/",authenticate, zValidator("query", pagingSchema), async (c) => {
-  const limit = c.req.valid("query").limit;
-  const offset = c.req.valid("query").offset;
+mediaApi.get("/",authenticate, zValidator("json", pagingSchema), async (c) => {
+  const limit = c.req.valid("json").limit;
+  const offset = c.req.valid("json").offset;
 
   const media = await prisma.media.findMany({ skip: offset, take: limit });
 

@@ -7,9 +7,9 @@ import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 export const imageApi = new Hono();
 
 //ná í 
-imageApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
-    const limit=c.req.valid('query').limit
-    const offset =c.req.valid('query').offset
+imageApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
+    const limit=c.req.valid('json').limit
+    const offset =c.req.valid('json').offset
 
     const image = await prisma.image.findMany({skip:offset, take:limit});
 
@@ -29,7 +29,7 @@ imageApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Ná í eftir id eða slug
-imageApi.get('/:id',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
+imageApi.get('/:id',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
     const id = c.req.param('id')
 
     const image = await prisma.image.findUnique({
@@ -49,10 +49,10 @@ imageApi.get('/:id',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Búa til
-imageApi.post('/',authenticateAdmin,zValidator('query',createImageSchema,(result, c) => { if (!result.success) {
+imageApi.post('/',authenticateAdmin,zValidator('json',createImageSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
-        const image=c.req.valid('query').image
-        const eventId =c.req.valid('query').eventId
+        const image=c.req.valid('json').image
+        const eventId =c.req.valid('json').eventId
 
         const newImage = await prisma.image.create({
             data:{
@@ -71,11 +71,11 @@ imageApi.post('/',authenticateAdmin,zValidator('query',createImageSchema,(result
 
 
 //Uppfæra
-imageApi.put('/:id',authenticateAdmin,zValidator('query',updateImageSchema,(result, c) => {if (!result.success) {
+imageApi.put('/:id',authenticateAdmin,zValidator('json',updateImageSchema,(result, c) => {if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
         const id = c.req.param('id')
-        const image=c.req.valid('query').image
-        const eventId =c.req.valid('query').eventId
+        const image=c.req.valid('json').image
+        const eventId =c.req.valid('json').eventId
 
         const updatedImage=await prisma.image.update({
             where: {id:Number(id),},
@@ -96,7 +96,7 @@ imageApi.put('/:id',authenticateAdmin,zValidator('query',updateImageSchema,(resu
     
 
 //Eyða
-imageApi.delete('/:id',authenticateAdmin,zValidator('query',pagingSchema) ,async(c)=>{
+imageApi.delete('/:id',authenticateAdmin,zValidator('json',pagingSchema) ,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.image.delete({
