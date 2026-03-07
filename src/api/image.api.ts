@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
-import {pagingSchema, createImageSchema,updateImageSchema} from "../schema.zod.js"
+import {pagingSchema, createImageSchema,updateImageSchema, idSchema} from "../schema.zod.js"
 import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const imageApi = new Hono();
 
 //ná í 
-imageApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
-    const limit=c.req.valid('json').limit
-    const offset =c.req.valid('json').offset
+imageApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
+    const limit=c.req.valid('query').limit
+    const offset =c.req.valid('query').offset
 
     const image = await prisma.image.findMany({skip:offset, take:limit});
 
@@ -29,7 +29,7 @@ imageApi.get('/',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
 })
 
 //Ná í eftir id eða slug
-imageApi.get('/:id',authenticate,zValidator('json',pagingSchema) ,async(c)=>{
+imageApi.get('/:id',authenticate, zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
     const image = await prisma.image.findUnique({
@@ -96,7 +96,7 @@ imageApi.put('/:id',authenticateAdmin,zValidator('json',updateImageSchema,(resul
     
 
 //Eyða
-imageApi.delete('/:id',authenticateAdmin,zValidator('json',pagingSchema) ,async(c)=>{
+imageApi.delete('/:id',authenticateAdmin, zValidator("param", idSchema),,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.image.delete({
