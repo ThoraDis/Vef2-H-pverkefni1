@@ -1,5 +1,6 @@
 import { prisma } from "../src/prisma.js";
 import { Role } from '@prisma/client';
+import { auth } from "../src/lib/auth.js";
 
 const numOfEvents = 8;
 const ticketsPerEvent = 4;
@@ -97,23 +98,17 @@ async function main() {
     const user = users[i]
     await createTicket(i, eventId, user?.id);
   }
-  const admin = await prisma.user.create({
-    data: {
-      email: `admin@example.org`,
-      name: `theadmin`,
-      username : 'admin',
-      role:Role.ADMIN
-    },
+  const res = await auth.api.signUpEmail({
+    body: {
+      email: "admin@example.org",
+      password: "admin12345",
+      name: "theadmin"
+    }
   });
 
-  await prisma.account.create({
-    data: {
-      id: crypto.randomUUID(), 
-      accountId: admin.id,       
-      providerId: 'local',       
-      userId: admin.id,     
-      password: "admin12345"
-    },
+  await prisma.user.update({
+    where: { email: "admin@example.org" },
+    data: { role: Role.ADMIN }
   });
 
 }
