@@ -5,11 +5,11 @@ import {
   pagingSchema,
   createUserSchema,
   updateUserSchema,
-  idSchema,
-  loginUserSchema,
+  // idSchema,
+  // loginUserSchema,
   userIdSchema,
 } from "../schema.zod.js";
-import { auth } from "../lib/auth.js";
+// import { auth } from "../lib/auth.js";
 import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const userApi = new Hono();
@@ -60,7 +60,6 @@ userApi.post(
   async (c) => {
     const username = c.req.valid("json").username;
     const email = c.req.valid("json").email;
-    const username = c.req.valid("json").username;
 
 
     const newUser = await prisma.user.create({

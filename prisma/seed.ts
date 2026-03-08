@@ -1,6 +1,6 @@
 import { prisma } from "../src/prisma.js";
-import { Role } from '@prisma/client';
-import { auth } from "../src/lib/auth.js";
+import { Event, Place, Role, User } from "../src/generated/prisma/client.js";
+// import { auth } from "../src/lib/auth.js";
 
 const numOfEvents = 8;
 const ticketsPerEvent = 4;
@@ -20,7 +20,7 @@ async function createEvent(i: number, placeId: number) {
     data: {
       title: `Random Event Nr.${i}`,
       description: `A facinating description of the event`,
-      placeID: placeId, 
+      placeID: placeId,
     },
   });
 }
@@ -71,12 +71,12 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.place.deleteMany();
 
-  const places = [];
+  const places: Place[] = [];
   for (let i = 0; i < numOfEvents / 2; i++) {
     places.push(await createPlace(i));
   }
 
-  const events = [];
+  const events: Event[] = [];
   for (let i = 0; i < numOfEvents; i++) {
     const placeId = places[i % (numOfEvents / 2)].id;
     const event = await createEvent(i, placeId);
@@ -87,30 +87,29 @@ async function main() {
     await createMedia(i, event.id);
   }
 
-  const users = [];
+  const users: User[] = [];
   const numUsers = numOfEvents * ticketsPerEvent * boughtTicketsRatio;
   for (let i = 0; i < numUsers; i++) {
     users.push(await createUser(i));
   }
 
   for (let i = 0; i < numOfEvents * ticketsPerEvent; i++) {
-    const eventId = events[i % numOfEvents].id; 
-    const user = users[i]
+    const eventId = events[i % numOfEvents].id;
+    const user = users[i];
     await createTicket(i, eventId, user?.id);
   }
-  const res = await auth.api.signUpEmail({
-    body: {
-      email: "admin@example.org",
-      password: "admin12345",
-      name: "theadmin"
-    }
-  });
+  // const res = await auth.api.signUpEmail({
+  //   body: {
+  //     email: "admin@example.org",
+  //     password: "admin12345",
+  //     name: "theadmin",
+  //   },
+  // });
 
   await prisma.user.update({
     where: { email: "admin@example.org" },
-    data: { role: Role.ADMIN }
+    data: { role: Role.ADMIN },
   });
-
 }
 
 main()
