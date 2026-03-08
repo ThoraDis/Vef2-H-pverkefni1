@@ -1,7 +1,7 @@
 ### Uppsetning
 ```
 npm install
-npm prisma generate
+npx prisma generate
 npm run dev
 ```
 
