@@ -2,6 +2,12 @@ import { prisma } from "../src/prisma.js";
 import { Event, Place, Role, User } from "../src/generated/prisma/client.js";
 import { auth } from "../src/lib/auth.js";
 
+const img1 = "../static/img/image_cat_tall.png";
+const img2 = "../static/img/image_cat_wide.png";
+const img3 = "../static/img/image_medium.png";
+const img4 = "../static/img/image_tall.png";
+const img5 = "../static/img/image_wide.png";
+
 const numOfEvents = 8;
 const ticketsPerEvent = 4;
 const boughtTicketsRatio = 1 / 2;
@@ -29,6 +35,15 @@ async function createImage(i: number, eventId: number) {
   await prisma.image.create({
     data: {
       image: `test-image-${i}`,
+      eventId: eventId,
+    },
+  });
+}
+
+async function createCustomImage(link: string, eventId: number) {
+  await prisma.image.create({
+    data: {
+      image: `${link}`,
       eventId: eventId,
     },
   });
@@ -85,6 +100,12 @@ async function main() {
     await createImage(i * 2, event.id);
     await createImage(i * 2 + 1, event.id);
     await createMedia(i, event.id);
+
+    await createCustomImage(`${img1}`, event.id);
+    await createCustomImage(`${img2}`, event.id);
+    await createCustomImage(`${img3}`, event.id);
+    await createCustomImage(`${img4}`, event.id);
+    await createCustomImage(`${img5}`, event.id);
   }
 
   const users: User[] = [];
