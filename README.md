@@ -5,10 +5,6 @@ npm prisma generate
 npm run dev
 ```
 
-```
-open http://localhost:3000
-```
-
 Create user
 POST http://localhost:4000/api/auth/sign-up/email
 
@@ -34,18 +30,18 @@ Events:
 
   Ná í alla events
   GET http://localhost:4000/events
-
+  
   Ná í event eftir id
   GET http://localhost:4000/events/:id
 
   Búa til event
-  POST GET http://localhost:4000/events
+  POST http://localhost:4000/events
 
   Uppfæra event eftir id
-  POST GET http://localhost:4000/events/:id
+  POST http://localhost:4000/events/:id
 
   Eyða event eftir id
-  DELETE GET http://localhost:4000/events/:id
+  DELETE http://localhost:4000/events/:id
   
 Image:
 
@@ -56,13 +52,13 @@ Image:
   GET http://localhost:4000/image/:id
 
   Búa til image
-  POST GET http://localhost:4000/image
+  POST http://localhost:4000/image
 
   Uppfæra image eftir id
-  POST GET http://localhost:4000/image/:id
+  POST http://localhost:4000/image/:id
 
   Eyða image eftir id
-  DELETE GET http://localhost:4000/image/:id
+  DELETE http://localhost:4000/image/:id
   
 Media: 
   Ná í alla media
@@ -72,13 +68,13 @@ Media:
   GET http://localhost:4000/media/:id
 
   Búa til media
-  POST GET http://localhost:4000/media
+  POST http://localhost:4000/media
 
   Uppfæra media eftir id
-  POST GET http://localhost:4000/media/:id
+  POST http://localhost:4000/media/:id
 
   Eyða media eftir id
-  DELETE GET http://localhost:4000/media/:id
+  DELETE http://localhost:4000/media/:id
   
 PLace:
   Ná í alla place
@@ -88,13 +84,13 @@ PLace:
   GET http://localhost:4000/place/:id
 
   Búa til place
-  POST GET http://localhost:4000/place
+  POST http://localhost:4000/place
 
   Uppfæra place eftir id
-  POST GET http://localhost:4000/place/:id
+  POST http://localhost:4000/place/:id
 
   Eyða place eftir id
-  DELETE GET http://localhost:4000/place/:id
+  DELETE http://localhost:4000/place/:id
   
 Ticket:
 
@@ -105,13 +101,13 @@ Ticket:
   GET http://localhost:4000/ticket/:id
 
   Búa til ticket
-  POST GET http://localhost:4000/ticket
+  POST http://localhost:4000/ticket
 
   Uppfæra ticket eftir id
-  POST GET http://localhost:4000/ticket/:id
+  POST http://localhost:4000/ticket/:id
 
   Eyða ticket eftir id
-  DELETE GET http://localhost:4000/ticket/:id
+  DELETE http://localhost:4000/ticket/:id
   
 User:
 
@@ -122,15 +118,14 @@ User:
   GET http://localhost:4000/user/:id
 
   Búa til user
-  POST GET http://localhost:4000/user
+  POST http://localhost:4000/user
 
   Uppfæra user eftir id
-  POST GET http://localhost:4000/user/:id
+  POST http://localhost:4000/user/:id
 
   Eyða user eftir id
-  DELETE GET http://localhost:4000/user/:id
+  DELETE http://localhost:4000/user/:id
 
-  
 ### Hóp 4
 Nöfn | Notendanofn
 - Þóra Dís Garðarsdóttir| ThoraDis
