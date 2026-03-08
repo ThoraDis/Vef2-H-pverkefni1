@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
-import {pagingSchema,createPlaceSchema,updatePlaceSchema} from "../schema.zod.js"
+import {pagingSchema,createPlaceSchema,updatePlaceSchema,idSchema} from "../schema.zod.js"
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const placeApi = new Hono();
 
 //ná í 
-placeApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
+placeApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
     const limit=c.req.valid('query').limit
     const offset =c.req.valid('query').offset
 
@@ -27,7 +28,7 @@ placeApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Ná í eftir id eða slug
-placeApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+placeApi.get('/:id',authenticate, zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
     const place = await prisma.place.findUnique({
@@ -47,17 +48,15 @@ placeApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
 })
 
 //Búa til
-placeApi.post('/',zValidator('query',createPlaceSchema,(result, c) => { if (!result.success) {
+placeApi.post('/',authenticateAdmin,zValidator('json',createPlaceSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
-        const email=c.req.valid('query').email
-        const address =c.req.valid('query').address
-        //const events = c.req.valid('query').events
+        const email=c.req.valid('json').email
+        const address =c.req.valid('json').address
 
         const newPlace = await prisma.place.create({
             data:{
                 email:email,
                 address:address,
-                //events
             }
         })
 
@@ -71,13 +70,11 @@ placeApi.post('/',zValidator('query',createPlaceSchema,(result, c) => { if (!res
 
 
 //Uppfæra
-placeApi.put('/:id',zValidator('query',updatePlaceSchema,(result, c) => {if (!result.success) {
+placeApi.put('/:id',authenticateAdmin,zValidator('json',updatePlaceSchema,(result, c) => {if (!result.success) {
     return c.json("Bad request",400)}}), async(c)=>{
         const id = c.req.param('id')
-        const email=c.req.valid('query').email
-        const address =c.req.valid('query').address
-        //const events = c.req.valid('query').events
-
+        const email=c.req.valid('json').email
+        const address =c.req.valid('json').address
 
         const updatedPlace=await prisma.place.update({
          where: {id:Number(id),},
@@ -99,10 +96,10 @@ placeApi.put('/:id',zValidator('query',updatePlaceSchema,(result, c) => {if (!re
     
 
 //Eyða
-placeApi.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+placeApi.delete('/:id',authenticateAdmin,zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
-    await prisma.event.delete({
+    await prisma.image.delete({
     where: {
         id:Number(id),},});
 

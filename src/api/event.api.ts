@@ -2,11 +2,12 @@ import { Hono } from "hono";
 import { prisma } from '../prisma.js'
 import {zValidator} from '@hono/zod-validator'
 import {pagingSchema, updateEventSchema,createEventSchema} from "../schema.zod.js"
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const eventApi = new Hono();
 
 //ná í 
-eventApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.get('/',authenticate,zValidator('query',pagingSchema) ,async(c)=>{
 
     const limit=c.req.valid('query').limit
     const offset =c.req.valid('query').offset
@@ -23,14 +24,13 @@ eventApi.get('/',zValidator('query',pagingSchema) ,async(c)=>{
             count: eventsCount
             }
         }
-
     return c.json(response,200)
 
     }
 )
 
 //Ná í eftir id eða slug
-eventApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.get('/:id' ,async(c)=>{
         const id = c.req.param('id')
 
         const event = await prisma.event.findUnique({
@@ -38,7 +38,7 @@ eventApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
         });
 
         if (!event) {
-            return c.json({ error: 'no such event' }, 404);
+            return c.json({ error: 'No such event' }, 404);
         }
 
 
@@ -52,13 +52,13 @@ eventApi.get('/:id',zValidator('query',pagingSchema) ,async(c)=>{
 )
 
 //Búa til
-eventApi.post('/',zValidator('query',createEventSchema,(result, c) => { if (!result.success) {
+eventApi.post('/',authenticateAdmin,zValidator('json',createEventSchema,(result, c) => { if (!result.success) {
       return c.json("Bad request",400)}}), async(c)=>{
 
-        const title=c.req.valid('query').title
-        const description =c.req.valid('query').description
-        const soldOut =c.req.valid('query').soldOut
-        const placeID =c.req.valid('query').placeID
+        const title=c.req.valid('json').title
+        const description =c.req.valid('json').description
+        const soldOut =c.req.valid('json').soldOut
+        const placeID =c.req.valid('json').placeID
 
         const newEvent = await prisma.event.create({
             data:{
@@ -79,14 +79,14 @@ eventApi.post('/',zValidator('query',createEventSchema,(result, c) => { if (!res
 
 
 //Uppfæra
-eventApi.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
+eventApi.put('/:id',authenticateAdmin,zValidator('json',updateEventSchema,(result, c) => {
     if (!result.success) {return c.json("Bad request",400)}}), async(c)=>{
 
         const id = c.req.param('id')
-        const title=c.req.valid('query').title
-        const description =c.req.valid('query').description
-        const soldOut =c.req.valid('query').soldOut
-        const placeID =c.req.valid('query').placeID
+        const title=c.req.valid('json').title
+        const description =c.req.valid('json').description
+        const soldOut =c.req.valid('json').soldOut
+        const placeID =c.req.valid('json').placeID
 
         const updatedEvent=await prisma.event.update({
             where: {id:Number(id),},
@@ -108,7 +108,7 @@ eventApi.put('/:id',zValidator('query',updateEventSchema,(result, c) => {
     
 
 //Eyða
-eventApi.delete('/:id',zValidator('query',pagingSchema) ,async(c)=>{
+eventApi.delete('/:id',authenticateAdmin,async(c)=>{
     const id = c.req.param('id')
 
     await prisma.event.delete({

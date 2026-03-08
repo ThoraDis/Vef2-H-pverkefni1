@@ -7,10 +7,13 @@ import {
   updateTicketSchema,
   idSchema,
 } from "../schema.zod.js";
+import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const ticketApi = new Hono();
 
-ticketApi.get("/", zValidator("query", pagingSchema), async (c) => {
+//ná í
+
+ticketApi.get("/", authenticate, zValidator("query", pagingSchema), async (c) => {
   const limit = c.req.valid("query").limit;
   const offset = c.req.valid("query").offset;
 
@@ -31,7 +34,7 @@ ticketApi.get("/", zValidator("query", pagingSchema), async (c) => {
 });
 
 //Ná í eftir id eða slug
-ticketApi.get("/:id", zValidator("param", idSchema), async (c) => {
+ticketApi.get("/:id", authenticate, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   const ticket = await prisma.ticket.findUnique({ where: { id: id } });
@@ -46,6 +49,7 @@ ticketApi.get("/:id", zValidator("param", idSchema), async (c) => {
 //Búa til
 ticketApi.post(
   "/",
+  
   zValidator("json", createTicketSchema, (result, c) => {
     if (!result.success) {
       console.log(result);
@@ -74,7 +78,8 @@ ticketApi.post(
 
 //Uppfæra
 ticketApi.put(
-  "/:id",
+
+  "/:id",authenticateAdmin,
   zValidator("json", updateTicketSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -104,7 +109,8 @@ ticketApi.put(
 );
 
 //Eyða
-ticketApi.delete("/:id", zValidator("param", idSchema), async (c) => {
+
+ticketApi.delete("/:id", authenticateAdmin, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
   await prisma.ticket.delete({
