@@ -96,7 +96,7 @@ imageApi.put('/:id',authenticateAdmin,zValidator('json',updateImageSchema,(resul
     
 
 //Eyða
-imageApi.delete('/:id',authenticateAdmin, zValidator("param", idSchema),,async(c)=>{
+imageApi.delete('/:id',authenticateAdmin, zValidator("param", idSchema),async(c)=>{
     const id = c.req.param('id')
 
     await prisma.image.delete({
