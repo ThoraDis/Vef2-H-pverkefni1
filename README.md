@@ -19,13 +19,15 @@ Sign in
 POST http://localhost:4000/api/auth/sign-in/email
 
 Admin login er 
+```
 {
 "email": "admin@example.org",
 "password": "admin12345"
 }
+```
 
 Routes:
-
+```
 Events:
 
   Ná í alla events
@@ -125,7 +127,7 @@ User:
 
   Eyða user eftir id
   DELETE http://localhost:4000/user/:id
-
+```
 ### Hóp 4
 Nöfn | Notendanofn
 - Þóra Dís Garðarsdóttir| ThoraDis
