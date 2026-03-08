@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { serve } from "@hono/node-server";
-import { app } from "./main.js";
+import { app } from "./newmain.js";
 import { eventApi } from "./api/event.api.js";
 import { imageApi } from "./api/image.api.js";
 import { mediaApi } from "./api/media.api.js";
