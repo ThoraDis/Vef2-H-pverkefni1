@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import assert from "node:assert";
 import { describe, it, after } from "node:test";
 
-import { PrismaClient } from "../generated/prisma"; 
+import { PrismaClient } from "../generated/prisma/index.js"; 
 
 dotenv.config({ quiet: true });
 
