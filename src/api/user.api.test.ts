@@ -1,7 +1,16 @@
+import dotenv from "dotenv";
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { prisma } from "../../src/generated/prisma";
+import { PrismaClient } from "../../src/generated/prisma";
 import { after } from "node:test";
+
+
+import { PrismaPg } from "@prisma/adapter-pg";
+
+dotenv.config({ quiet: true });
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+export const prisma = new PrismaClient({ adapter });
 
 after(async () => {
   await prisma.session.deleteMany();
