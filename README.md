@@ -1,5 +1,6 @@
 ```
 npm install
+npm prisma generate
 npm run dev
 ```
 
@@ -19,3 +20,10 @@ json format:
 
 Sign in
 POST http://localhost:4000/api/auth/sign-in/email
+
+Admin login er 
+{
+"email": "admin@example.org",
+"password": "admin12345"
+}
+
