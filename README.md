@@ -1,3 +1,4 @@
+### Uppsetning
 ```
 npm install
 npm prisma generate
@@ -26,4 +27,11 @@ Admin login er
 "email": "admin@example.org",
 "password": "admin12345"
 }
+
+### Hóp 4
+Nöfn | Notendanofn
+- Þóra Dís Garðarsdóttir| ThoraDis
+- Valur Kristinn Starkaðarson | valurkristinn
+- Dagur Ingi Viðar | DagurVidar
+- Jóhann Chanse Sigurðsson | johannhawk
 
