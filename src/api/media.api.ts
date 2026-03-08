@@ -16,39 +16,48 @@ mediaApi.get("/",authenticate, zValidator("json", pagingSchema), async (c) => {
   const limit = c.req.valid("json").limit;
   const offset = c.req.valid("json").offset;
 
-  const media = await prisma.media.findMany({ skip: offset, take: limit });
+  try{
+    const media = await prisma.media.findMany({ skip: offset, take: limit });
 
-  const mediaCount = await prisma.media.count();
+    const mediaCount = await prisma.media.count();
 
-  const response = {
-    data: media,
-    paging: {
-      limit,
-      offset,
-      count: mediaCount,
-    },
-  };
+    const response = {
+      data: media,
+      paging: {
+        limit,
+        offset,
+        count: mediaCount,
+      },
+    };
 
-  return c.json(response, 200);
+    return c.json(response, 200);
+
+  }catch(err){
+        return c.json(err,400)
+    }
 });
 
 //Ná í eftir id eða slug
 mediaApi.get("/:id",authenticate, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
 
-  const media = await prisma.media.findUnique({ where: { id: id } });
+  try{
+    const media = await prisma.media.findUnique({ where: { id: id } });
 
-  if (!media) {
-    return c.json({ error: "No such media" }, 404);
+    if (!media) {
+      return c.json({ error: "No such media" }, 404);
+    }
+
+    return c.json(media, 200);
+
+  }catch(err){
+        return c.json(err,400)
   }
-
-  return c.json(media, 200);
 });
 
 //Búa til
 mediaApi.post(
-  "/",authenticateAdmin,
-  zValidator("json", createMediaSchema, (result, c) => {
+  "/",authenticateAdmin,zValidator("json", createMediaSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
     }
@@ -58,19 +67,24 @@ mediaApi.post(
     const website = c.req.valid("json").website;
     const facebook = c.req.valid("json").facebook;
 
-    const newMedia = await prisma.media.create({
-      data: {
-        eventId: eventId,
-        website: website,
-        facebook: facebook,
-      },
-    });
+    try{
+      const newMedia = await prisma.media.create({
+        data: {
+          eventId: eventId,
+          website: website,
+          facebook: facebook,
+        },
+      });
 
-    const response = {
-      data: newMedia,
-    };
+      const response = {
+        data: newMedia,
+      };
 
-    return c.json(response, 201);
+      return c.json(response, 201);
+
+    }catch(err){
+        return c.json(err,400)
+    }
   },
 );
 
@@ -90,31 +104,36 @@ mediaApi.put(
     const website = c.req.valid("json").website;
     const facebook = c.req.valid("json").facebook;
 
-    const newMedia = await prisma.media.update({
-      where: { id: id },
-      data: {
-        eventId: eventId,
-        website: website,
-        facebook: facebook,
-      },
-    });
-    const response = {
-      data: newMedia,
-    };
+    try{
+      const newMedia = await prisma.media.update({
+        where: { id: id },
+        data: {
+          eventId: eventId,
+          website: website,
+          facebook: facebook,
+        },
+      });
+      const response = {
+        data: newMedia,
+      };
 
-    return c.json(response, 200);
+      return c.json(response, 200);
+
+    }catch(err){
+        return c.json(err,400)
+    }
   },
 );
 
 //Eyða
 mediaApi.delete("/:id",authenticateAdmin, zValidator("param", idSchema), async (c) => {
   const id = c.req.valid("param").id;
+  try{
+    await prisma.media.delete({
+    where: {id: id,},});
 
-  await prisma.media.delete({
-    where: {
-      id: id,
-    },
-  });
-
-  return c.json(204);
+    return c.json(204);
+  }catch(err){
+    return c.json(err,400)
+  }
 });
