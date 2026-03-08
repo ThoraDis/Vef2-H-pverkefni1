@@ -5,34 +5,35 @@ import {
   pagingSchema,
   createUserSchema,
   updateUserSchema,
-  idSchema,
-  loginUserSchema,
   userIdSchema,
 } from "../schema.zod.js";
-import { auth } from "../lib/auth.js";
 import { authenticateAdmin, authenticate } from "../authentication/jwtauth.js";
 
 export const userApi = new Hono();
 
 //ná í
-userApi.get("/", authenticate, zValidator("json", pagingSchema), async (c) => {
-  const limit = c.req.valid("json").limit;
-  const offset = c.req.valid("json").offset;
+userApi.get("/", authenticate, zValidator("query", pagingSchema), async (c) => {
+  const limit = c.req.valid("query").limit;
+  const offset = c.req.valid("query").offset;
 
-  const users = await prisma.user.findMany({ skip: offset, take: limit });
+  try {
+    const users = await prisma.user.findMany({ skip: offset, take: limit });
 
-  const usersCount = await prisma.user.count();
+    const usersCount = await prisma.user.count();
 
-  const response = {
-    data: users,
-    paging: {
-      limit,
-      offset,
-      count: usersCount,
-    },
-  };
+    const response = {
+      data: users,
+      paging: {
+        limit,
+        offset,
+        count: usersCount,
+      },
+    };
 
-  return c.json(response, 200);
+    return c.json(response, 200);
+  } catch (err) {
+    return c.json(err, 400);
+  }
 });
 
 //Ná í eftir id eða slug
@@ -43,13 +44,17 @@ userApi.get(
   async (c) => {
     const id = c.req.valid("param").id;
 
-    const user = await prisma.user.findUnique({ where: { id: id } });
+    try {
+      const user = await prisma.user.findUnique({ where: { id: id } });
 
-    if (!user) {
-      return c.json({ error: "no such user" }, 404);
+      if (!user) {
+        return c.json({ error: "no such user" }, 404);
+      }
+
+      return c.json(user, 200);
+    } catch (err) {
+      return c.json(err, 400);
     }
-
-    return c.json(user, 200);
   },
 );
 
@@ -67,18 +72,22 @@ userApi.post(
     const username = c.req.valid("json").username;
     const email = c.req.valid("json").email;
 
-    const newUser = await prisma.user.create({
-      data: {
-        username: username,
-        email: email,
-      },
-    });
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          username: username,
+          email: email,
+        },
+      });
 
-    const response = {
-      data: newUser,
-    };
+      const response = {
+        data: newUser,
+      };
 
-    return c.json(response, 201);
+      return c.json(response, 201);
+    } catch (err) {
+      return c.json(err, 400);
+    }
   },
 );
 
@@ -96,18 +105,22 @@ userApi.put(
     const id = c.req.valid("param").id;
     const email = c.req.valid("json").email;
 
-    const newUser = await prisma.user.update({
-      where: { id: id },
-      data: {
-        email: email,
-      },
-    });
+    try {
+      const newUser = await prisma.user.update({
+        where: { id: id },
+        data: {
+          email: email,
+        },
+      });
 
-    const response = {
-      data: newUser,
-    };
+      const response = {
+        data: newUser,
+      };
 
-    return c.json(response, 201);
+      return c.json(response, 201);
+    } catch (err) {
+      return c.json(err, 400);
+    }
   },
 );
 
@@ -119,12 +132,14 @@ userApi.delete(
   async (c) => {
     const id = c.req.valid("param").id;
 
-    await prisma.user.delete({
-      where: {
-        id: id,
-      },
-    });
+    try {
+      await prisma.user.delete({
+        where: { id: id },
+      });
 
-    return c.json(204);
+      return c.json(204);
+    } catch (err) {
+      return c.json(err, 400);
+    }
   },
 );
