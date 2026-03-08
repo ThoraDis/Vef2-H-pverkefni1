@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { prisma } from "../prisma.js";
+import { prisma } from "./src/generated/prisma";
 import { after } from "node:test";
 
 after(async () => {
