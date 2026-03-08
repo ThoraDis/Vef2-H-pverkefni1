@@ -1,8 +1,7 @@
 import { Hono } from "hono";
 import { prisma } from "../prisma.js";
 import { zValidator } from "@hono/zod-validator";
-import { pagingSchema, createUserSchema, updateUserSchema, idSchema, loginUserSchema, } from "../schema.zod.js";
-import { auth } from "../lib/auth.js";
+import { pagingSchema, createUserSchema, updateUserSchema, idSchema} from "../schema.zod.js";
 export const userApi = new Hono();
 //ná í
 userApi.get("/", zValidator("query", pagingSchema), async (c) => {

@@ -98,7 +98,7 @@ async function main() {
     const user = users[i]
     await createTicket(i, eventId, user?.id);
   }
-  const res = await auth.api.signUpEmail({
+    await auth.api.signUpEmail({
     body: {
       email: "admin@example.org",
       password: "admin12345",
