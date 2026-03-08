@@ -1,6 +1,17 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import { prisma } from "../prisma.js";
+import { after } from "node:test";
+
+after(async () => {
+  await prisma.session.deleteMany();
+  await prisma.ticket.deleteMany();
+  await prisma.image.deleteMany();
+  await prisma.media.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.place.deleteMany();
+});
 
 describe("User endpoint tests", () => {
   describe("Unauthorized User", () => {
@@ -12,7 +23,7 @@ describe("User endpoint tests", () => {
           error: "Unauthorized",
         };
 
-        assert.strictEqual(users, expected);
+        assert.deepStrictEqual(users, expected);
       });
     });
   });
