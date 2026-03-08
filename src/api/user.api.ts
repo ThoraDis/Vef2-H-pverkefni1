@@ -5,11 +5,11 @@ import {
   pagingSchema,
   createUserSchema,
   updateUserSchema,
-  idSchema,
-  loginUserSchema,
+  // idSchema,
+  // loginUserSchema,
   userIdSchema,
 } from "../schema.zod.js";
-import { auth } from "../lib/auth.js";
+// import { auth } from "../lib/auth.js";
 import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
 
 export const userApi = new Hono();
