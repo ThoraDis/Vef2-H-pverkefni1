@@ -6,12 +6,13 @@ const numOfEvents = 8;
 const ticketsPerEvent = 4;
 const boughtTicketsRatio = 1 / 2;
 
-const img1 = "../static/img/image_cat_tall.png";
-const img2 = "../static/img/image_cat_wide.png";
-const img3 = "../static/img/image_medium.png";
-const img4 = "../static/img/image_tall.png";
-const img5 = "../static/img/image_wide.png";
-
+const images = [
+  "/static/img/image_cat_tall.png",
+  "/static/img/image_cat_wide.png",
+  "/static/img/image_medium.png",
+  "/static/img/image_tall.png",
+  "/static/img/image_wide.png",
+];
 async function createPlace(i: number) {
   return await prisma.place.create({
     data: {
@@ -34,16 +35,7 @@ async function createEvent(i: number, placeId: number) {
 async function createImage(i: number, eventId: number) {
   await prisma.image.create({
     data: {
-      image: `test-image-${i}`,
-      eventId: eventId,
-    },
-  });
-}
-
-async function createCustomImage(link: string, eventId: number) {
-  await prisma.image.create({
-    data: {
-      image: `${link}`,
+      image: images[i%5],
       eventId: eventId,
     },
   });
@@ -100,12 +92,6 @@ async function main() {
     await createImage(i * 2, event.id);
     await createImage(i * 2 + 1, event.id);
     await createMedia(i, event.id);
-
-    await createCustomImage(`${img1}`, event.id);
-    await createCustomImage(`${img2}`, event.id);
-    await createCustomImage(`${img3}`, event.id);
-    await createCustomImage(`${img4}`, event.id);
-    await createCustomImage(`${img5}`, event.id);
   }
 
   const users: User[] = [];
