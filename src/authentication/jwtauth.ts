@@ -22,18 +22,20 @@ export const authenticate = async (c: Context, next: Next) => {
 
 export const authenticateAdmin = async (c: Context, next: Next) => {
   const userId = c.get("userId");
+
   if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
+
   if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   if (user.role !== "ADMIN") {
-    return c.json({ error: "Required role not possessed" }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   await next();
-};;
+};

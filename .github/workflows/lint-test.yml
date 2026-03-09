@@ -13,6 +13,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
       BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: OvEE2hsOdk/xDvN5x1fbIJaZb+3qVogzKBXIxJj8MQY=
 
     services:
       postgres:
@@ -52,4 +53,4 @@ jobs:
 
       - name: Test
         if: always()
-        run: npm test       
+        run: npx start-server-and-test 'npm run dev' http://localhost:3000 'npm test'       
