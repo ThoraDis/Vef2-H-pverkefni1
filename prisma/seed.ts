@@ -6,6 +6,13 @@ const numOfEvents = 8;
 const ticketsPerEvent = 4;
 const boughtTicketsRatio = 1 / 2;
 
+const images = [
+  "/static/img/image_cat_tall.png",
+  "/static/img/image_cat_wide.png",
+  "/static/img/image_medium.png",
+  "/static/img/image_tall.png",
+  "/static/img/image_wide.png",
+];
 async function createPlace(i: number) {
   return await prisma.place.create({
     data: {
@@ -28,7 +35,7 @@ async function createEvent(i: number, placeId: number) {
 async function createImage(i: number, eventId: number) {
   await prisma.image.create({
     data: {
-      image: `test-image-${i}`,
+      image: images[i%5],
       eventId: eventId,
     },
   });
@@ -98,7 +105,7 @@ async function main() {
     const user = users[i];
     await createTicket(i, eventId, user?.id);
   }
-    await auth.api.signUpEmail({
+  await auth.api.signUpEmail({
     body: {
       email: "admin@example.org",
       password: "admin12345",
