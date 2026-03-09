@@ -3,7 +3,10 @@ import { describe, it, after } from "node:test";
 
 import { PrismaClient } from "../generated/prisma/client.ts"; 
 
-export const prisma = new PrismaClient();
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+export const prisma = new PrismaClient({ adapter });
 
 after(async () => {
   await prisma.session.deleteMany();
