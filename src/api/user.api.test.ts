@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import assert from "node:assert";
 import { describe, it, after } from "node:test";
 
-import pkg from "../generated/prisma/index.js";
+import pkg from "./src/generated/prisma/client.js";
 const { PrismaClient } = pkg;
 
 dotenv.config({ quiet: true });

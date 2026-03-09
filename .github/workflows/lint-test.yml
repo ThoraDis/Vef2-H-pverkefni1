@@ -44,14 +44,6 @@ jobs:
       - name: Generate prisma client
         run: npx prisma generate
       
-      - name: Debug Prisma Output Path
-        run: |
-          echo "---"
-          find . -type d -name "prisma" | grep generated
-          echo "---"
-          ls -la src/generated/prisma 
-          echo "---"
-
       - name: Push schema
         run: npx prisma db push 
 
