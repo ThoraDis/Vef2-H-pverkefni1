@@ -26,6 +26,16 @@ Admin login er
 }
 ```
 
+Dæmi um aðgerð:
+```
+POST http://localhost:3000/media
+body: {
+  "website":"site.com",
+  "facebook":"facebook",
+  "eventId": "some-id"
+}
+```
+
 Routes:
 ```
 Events:
