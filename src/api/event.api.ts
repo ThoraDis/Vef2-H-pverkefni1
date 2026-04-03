@@ -14,7 +14,6 @@ export const eventApi = new Hono();
 //ná í
 eventApi.get(
   "/",
-  authenticate,
   zValidator("query", pagingSchema),
   async (c) => {
     const limit = c.req.valid("query").limit;
