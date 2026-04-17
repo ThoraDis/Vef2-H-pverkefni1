@@ -28,6 +28,7 @@ app.use(
       "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app",
       "https://vef2-2026-h2.vercel.app",
       "https://h2.valur.me",
+      "https://*.vercel.app",
     ],
     credentials: true,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
