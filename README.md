@@ -1,7 +1,7 @@
 ### Uppsetning
 ```
 npm install
-npm prisma generate
+npx prisma generate
 npm run dev
 ```
 
@@ -26,6 +26,16 @@ Admin login er
 }
 ```
 
+Dæmi um aðgerð:
+```
+POST http://localhost:3000/media
+body: {
+  "website":"site.com",
+  "facebook":"facebook",
+  "eventId": "some-id"
+}
+```
+
 Routes:
 ```
 Events:
@@ -40,7 +50,7 @@ Events:
   POST http://localhost:4000/events
 
   Uppfæra event eftir id
-  POST http://localhost:4000/events/:id
+  PUT http://localhost:4000/events/:id
 
   Eyða event eftir id
   DELETE http://localhost:4000/events/:id
@@ -57,7 +67,7 @@ Image:
   POST http://localhost:4000/image
 
   Uppfæra image eftir id
-  POST http://localhost:4000/image/:id
+  PUT http://localhost:4000/image/:id
 
   Eyða image eftir id
   DELETE http://localhost:4000/image/:id
@@ -73,7 +83,7 @@ Media:
   POST http://localhost:4000/media
 
   Uppfæra media eftir id
-  POST http://localhost:4000/media/:id
+  PUT http://localhost:4000/media/:id
 
   Eyða media eftir id
   DELETE http://localhost:4000/media/:id
@@ -89,7 +99,7 @@ PLace:
   POST http://localhost:4000/place
 
   Uppfæra place eftir id
-  POST http://localhost:4000/place/:id
+  PUT http://localhost:4000/place/:id
 
   Eyða place eftir id
   DELETE http://localhost:4000/place/:id
@@ -106,7 +116,7 @@ Ticket:
   POST http://localhost:4000/ticket
 
   Uppfæra ticket eftir id
-  POST http://localhost:4000/ticket/:id
+  PUT http://localhost:4000/ticket/:id
 
   Eyða ticket eftir id
   DELETE http://localhost:4000/ticket/:id
@@ -123,7 +133,7 @@ User:
   POST http://localhost:4000/user
 
   Uppfæra user eftir id
-  POST http://localhost:4000/user/:id
+  PUT http://localhost:4000/user/:id
 
   Eyða user eftir id
   DELETE http://localhost:4000/user/:id

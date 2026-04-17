@@ -7,59 +7,69 @@ import {
   updateTicketSchema,
   idSchema,
 } from "../schema.zod.js";
-import {authenticateAdmin, authenticate} from "../authentication/jwtauth.js"
+import { authenticateAdmin, authenticate } from "../authentication/jwtauth.js";
 
 export const ticketApi = new Hono();
 
 //ná í
 
-ticketApi.get("/", authenticate, zValidator("query", pagingSchema), async (c) => {
-  const limit = c.req.valid("query").limit;
-  const offset = c.req.valid("query").offset;
+ticketApi.get(
+  "/",
+  authenticate,
+  zValidator("query", pagingSchema),
+  async (c) => {
+    const limit = c.req.valid("query").limit;
+    const offset = c.req.valid("query").offset;
 
-  try{
-    const ticket = await prisma.ticket.findMany({ skip: offset, take: limit });
+    try {
+      const ticket = await prisma.ticket.findMany({
+        skip: offset,
+        take: limit,
+      });
 
-    const ticketCount = await prisma.ticket.count();
+      const ticketCount = await prisma.ticket.count();
 
-    const response = {
-      data: ticket,
-      paging: {
-        limit,
-        offset,
-        count: ticketCount,
-      },
-    };
+      const response = {
+        data: ticket,
+        paging: {
+          limit,
+          offset,
+          count: ticketCount,
+        },
+      };
 
-    return c.json(response, 200);
-
-  }catch(err){
-        return c.json(err,400)
+      return c.json(response, 200);
+    } catch (err) {
+      return c.json(err, 400);
     }
-});
+  },
+);
 
 //Ná í eftir id eða slug
-ticketApi.get("/:id", authenticate, zValidator("param", idSchema), async (c) => {
-  const id = c.req.valid("param").id;
+ticketApi.get(
+  "/:id",
+  authenticate,
+  zValidator("param", idSchema),
+  async (c) => {
+    const id = c.req.valid("param").id;
 
-  try{  
-    
-    const ticket = await prisma.ticket.findUnique({ where: { id: id } });
+    try {
+      const ticket = await prisma.ticket.findUnique({ where: { id: id } });
 
-    if (!ticket) {
-      return c.json({ error: "No such ticket" }, 404);
+      if (!ticket) {
+        return c.json({ error: "No such ticket" }, 404);
+      }
+
+      return c.json(ticket, 200);
+    } catch (err) {
+      return c.json(err, 400);
     }
-
-    return c.json(ticket, 200);
-
-  }catch(err){
-        return c.json(err,400)}
-});
+  },
+);
 
 //Búa til
 ticketApi.post(
   "/",
-  
   zValidator("json", createTicketSchema, (result, c) => {
     if (!result.success) {
       console.log(result);
@@ -71,7 +81,7 @@ ticketApi.post(
     const eventId = c.req.valid("json").eventId;
     const userId = c.req.valid("json").userId;
 
-    try{
+    try {
       const newTicket = await prisma.ticket.create({
         data: {
           eventId: eventId,
@@ -84,17 +94,17 @@ ticketApi.post(
       };
 
       return c.json(response, 201);
-
-    }catch(err){
-        return c.json(err,400)
+    } catch (err) {
+      return c.json(err, 400);
     }
   },
 );
 
 //Uppfæra
 ticketApi.put(
-
-  "/:id",authenticateAdmin,
+  "/:id",
+  authenticate,
+  authenticateAdmin,
   zValidator("json", updateTicketSchema, (result, c) => {
     if (!result.success) {
       return c.json("Bad request", 400);
@@ -107,7 +117,7 @@ ticketApi.put(
     const eventId = c.req.valid("json").eventId;
     const userId = c.req.valid("json").userId;
 
-    try{
+    try {
       const newTicket = await prisma.ticket.update({
         where: { id: id },
         data: {
@@ -121,24 +131,30 @@ ticketApi.put(
       };
 
       return c.json(response, 200);
-
-    }catch(err){
-        return c.json(err,400)
+    } catch (err) {
+      return c.json(err, 400);
     }
   },
 );
 
 //Eyða
 
-ticketApi.delete("/:id", authenticateAdmin, zValidator("param", idSchema), async (c) => {
-  const id = c.req.valid("param").id;
+ticketApi.delete(
+  "/:id",
+  authenticate,
+  authenticateAdmin,
+  zValidator("param", idSchema),
+  async (c) => {
+    const id = c.req.valid("param").id;
 
-  try{
-    await prisma.ticket.delete({
-      where: {id: id,},});
+    try {
+      await prisma.ticket.delete({
+        where: { id: id },
+      });
 
-  return c.json(204);
-  }catch(err){
-        return c.json(err,400)
-  }
-});
+      return c.json(204);
+    } catch (err) {
+      return c.json(err, 400);
+    }
+  },
+);
