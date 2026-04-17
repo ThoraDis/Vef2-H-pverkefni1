@@ -13,20 +13,14 @@ export const auth = betterAuth({
     "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app",
     "https://vef2-2026-h2.vercel.app",
     "https://h2.valur.me",
+    "https://*.vercel.app",
   ],
 
   advanced: {
     useSecureCookies: true,
     crossSubdomainCookies: {
       enabled: true,
-      domain: ".mydomain.example",
-    },
-  },
-
-  cookie: {
-    attributes: {
-      sameSite: "none",
-      secure: true,
+      domain: ".valur.me",
     },
   },
 
