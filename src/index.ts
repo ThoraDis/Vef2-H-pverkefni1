@@ -7,6 +7,7 @@ import { mediaApi } from "./api/media.api.js";
 import { placeApi } from "./api/place.api.js";
 import { ticketApi } from "./api/ticket.api.js";
 import { userApi } from "./api/user.api.js";
+import { cors } from "hono/cors";
 
 import type { AuthType } from "./lib/auth.js";
 import auth from "./routes/auth.js";
@@ -19,6 +20,19 @@ export const app = new Hono<{ Variables: AuthType }>({
   strict: false,
 });
 
+app.use('/*',
+  cors({
+    origin:["http://localhost:3000"],
+    credentials:true,
+    allowMethods:["GET", "POST", "PUT", "DELETE", "OPTION"],
+    allowHeaders:["Content-type","Authorization"]
+  })
+)
+
+app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+  return betterAuth.handler(c.req.raw);
+});
+
 const routes = [auth];
 const api = app.basePath("/api");
 routes.forEach((route) => api.route("/", route));
@@ -26,9 +40,6 @@ routes.forEach((route) => api.route("/", route));
 // sendir út allt sem er í static möppunni
 app.use("/*", serveStatic({ root: "./static" }));
 
-app.on(["GET", "POST"], "/api/auth/*", (c) => {
-  return betterAuth.handler(c.req.raw);
-});
 
 app.route("/events", eventApi);
 app.route("/image", imageApi);
