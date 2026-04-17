@@ -45,6 +45,9 @@ eventApi.get("/:id", zValidator("param", idSchema), async (c) => {
   try {
     const event = await prisma.event.findUnique({
       where: { id: id },
+        include: {
+        images: true,
+        },
     });
 
     if (!event) {
