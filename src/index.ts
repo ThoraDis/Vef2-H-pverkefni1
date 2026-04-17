@@ -20,16 +20,21 @@ export const app = new Hono<{ Variables: AuthType }>({
   strict: false,
 });
 
-app.use('/*',
+app.use(
+  "/*",
   cors({
-    origin:["http://localhost:3000"],
-    credentials:true,
-    allowMethods:["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders:["Content-type","Authorization"]
-  })
-)
+    origin: [
+      "http://localhost:3000",
+      "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app",
+      "vef2-2026-h2.vercel.app",
+    ],
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-type", "Authorization"],
+  }),
+);
 
-app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
   return betterAuth.handler(c.req.raw);
 });
 
@@ -39,7 +44,6 @@ routes.forEach((route) => api.route("/", route));
 
 // sendir út allt sem er í static möppunni
 app.use("/*", serveStatic({ root: "./static" }));
-
 
 app.route("/events", eventApi);
 app.route("/image", imageApi);
