@@ -8,13 +8,18 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL, // e.g. http://localhost:4000
   database: prismaAdapter(prisma, { provider: "postgresql" }),
 
-  trustedOrigins: ["http://localhost:3000", "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app", "vef2-2026-h2.vercel.app"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app",
+    "vef2-2026-h2.vercel.app",
+  ],
 
   advanced: {
     useSecureCookies: true,
-    crossTab: {
-      enabled: true,
+    crossSubdomainCookies: {
+      enabled: false, 
     },
+    cookiePrefix: "better-auth",
   },
 
   cookie: {
