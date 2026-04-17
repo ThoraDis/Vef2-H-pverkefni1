@@ -11,7 +11,8 @@ export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
     "https://vef2-2026-h2-git-dagur-valurks-projects.vercel.app",
-    "vef2-2026-h2.vercel.app",
+    "https://vef2-2026-h2.vercel.app",
+    "https://h2.valur.me",
   ],
 
   advanced: {
