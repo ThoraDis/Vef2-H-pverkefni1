@@ -24,6 +24,12 @@ export const auth = betterAuth({
     },
   },
 
+  defaultCookieAttributes: {
+    sameSite: "none",
+    secure: true,
+    domain: ".valur.me",
+  },
+
   emailAndPassword: {
     enabled: true,
   },
